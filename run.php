@@ -70,13 +70,41 @@ for ($iter = 0; $iter < $iterations; $iter++) {
     updateDifficulties($b, $responses, $theta, $learningRate, $nbPersons, $nbResponses);
 }
 
-// === Résultats ===
 echo "Compétences estimées (theta) \n";
 foreach ($theta as $i => $val) {
     echo "Personne " . ($i+1) . " : " . round($val, 3) . "\n";
 }
 
-echo "\nDifficultés estimées (b) ===\n";
+echo "\nDifficultés estimées (b)\n";
 foreach ($b as $j => $val) {
     echo "Item " . ($j+1) . " : " . round($val, 3) . "\n";
+}
+
+/**
+ * Trouve l’item le plus adapté à une personne en fonction de son theta
+ * => celui dont la difficulté b est la plus proche de θ
+ */
+function recommendItemForUser(float $theta, array $items): int
+{
+    $closestItem = 0;
+    $minDiff = INF;
+
+    foreach ($items as $id => $difficulty) {
+
+        // La difficulty est b
+        $diff = abs($theta - $difficulty);
+
+        if ($diff < $minDiff) {
+            $minDiff = $diff;
+            $closestItem = $id;
+        }
+    }
+
+    return $closestItem; // index de l’item avec la difficulty la plus proche de theta
+}
+
+echo "\nRecommandations d’items pour chaque personne :\n";
+foreach ($theta as $i => $val) {
+    $item = recommendItemForUser($val, $b);
+    echo "Personne " . ($i + 1) . " -> Item " . ($item + 1) . "\n";
 }
